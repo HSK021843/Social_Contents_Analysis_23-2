@@ -28,6 +28,7 @@ a4
 # 4.
 rownames(a4) <- c("사과", "바나나", "오렌지")
 colnames(a4) <- c("apple", "banana", "orange")
+
 a4
 
 
