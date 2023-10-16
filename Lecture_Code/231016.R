@@ -80,3 +80,89 @@ leaflet(data = quakes) %>%
     color = ~ifelse(mag >= 5.5, 'black', NA), 
     fillColor = ~ifelse(mag >= 6, 'red', ifelse(mag >= 5.5, 'green', NA)), #ifelse의 중첩 사용법
     fillOpacity = ~ifelse(mag >= 5.5, 0.3, 0))
+
+
+# 6.4 우리나라 행정경계 지도 
+# install.packages("ggplot2") 
+# install.packages("rgdal") 
+library(ggplot2) 
+library(rgdal)
+
+shapefile_path <- "C:/Users/9902k/Documents/Z_NGII_N3A_G0010000.shp"
+
+map <- readOGR(dsn = shapefile_path)
+
+df_map <- fortify(map) 
+head(df_map) 
+
+# 흑백/다각형으로 지도 그리기기
+ggplot(data = df_map, 
+       aes(x = long, y = lat, group = group)) + 
+  geom_polygon(fill = "white", color = "black") 
+
+ggplot(data = df_map, 
+       aes(x = long, y = lat, group = group, fill = id)) + 
+  geom_polygon(alpha = 0.3, color = "black") + 
+  theme(legend.position = "none") 
+
+
+# install.packages("ggplot2") 
+# install.packages("rgdal") 
+library(ggplot2) 
+library(rgdal) 
+
+map <- readOGR('Z_NGII_N3A_G0010000.shp') 
+
+# 위경도를 알기 쉽게 변환(표준을 변환)
+crs <- CRS('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') 
+map <- spTransform(map, CRSobj = crs) 
+df_map <- fortify(map) 
+
+ggplot(data = df_map, 
+       aes(x = long, y = lat, group = group, fill = id)) + 
+  geom_polygon(alpha = 0.3, color = "black") + 
+  theme(legend.position = "none") + 
+  labs(x="경도", y="위도")
+
+
+
+# 6.5 행정경계 지도를 이용한 국내 지진 분포 파악
+# 전처리: "북한", "N", "E" 없애기기
+# install.packages("ggplot2") 
+#install.packages("openxlsx") 
+# install.packages("rgdal") 
+library(ggplot2) 
+library(openxlsx) 
+library(rgdal) 
+
+df <- read.xlsx(file.choose(), sheet = 1, startRow = 4, colNames = FALSE) 
+head(df) 
+
+idx <- grep("^북한", df$X8) 
+df[idx, 'X8'] 
+df <- df[-idx, ] 
+
+df[,6] <- gsub("N", "", df[,6]) 
+df[,7] <- gsub("E", "", df[,7])
+
+df[,6] <- as.numeric(df[,6]) 
+df[,7] <- as.numeric(df[,7]) 
+
+shapefile_path <- "C:/Users/9902k/Documents/Z_NGII_N3A_G0010000.shp"
+map <- readOGR(dsn = shapefile_path) 
+crs <- CRS('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') 
+map <- spTransform(map, CRSobj = crs) 
+
+df_map <- fortify(map) 
+
+ggplot() + 
+  geom_polygon(data = df_map, 
+               aes(x = long, y = lat, group = group), 
+               fill = "white", alpha=0.5, 
+               color="black") + 
+  geom_point(data=df, 
+             aes(x=X7, y=X6, size=X3), 
+             shape=21, color='black', 
+             fill='red', alpha=0.3) + 
+  theme(legend.position = "none") + 
+  labs(title="지진분포", x="경도", y="위도")
