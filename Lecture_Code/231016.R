@@ -138,13 +138,16 @@ library(rgdal)
 df <- read.xlsx(file.choose(), sheet = 1, startRow = 4, colNames = FALSE) 
 head(df) 
 
-idx <- grep("^북한", df$X8) 
-df[idx, 'X8'] 
-df <- df[-idx, ] 
+idx <- grep("^북한", df$X8) # x8 컬럼에서 북한으로 시작하는 문자열을 찾아서 인덱스(순서) 반환 -> 반환되는 인덱스값의 위치에서 8번째 컬럼이 북한으로 시작함
+# ^북한이 아니라 북한 이면 문자열 내에 북한이 들어있기만 하면 인덱스 반환함. 만약 $북한이라면 북한으로 끝나는 문자열임
+df[idx, 'X8'] # 데이터프레임화
+df <- df[-idx, ] # 해당 인덱스를 제거한다 / idx번째 라인은 제거한다
 
+# 6, 7번째에 있는 N과 E를 뺀다(""로 바꾼다다)
 df[,6] <- gsub("N", "", df[,6]) 
 df[,7] <- gsub("E", "", df[,7])
 
+# 6, 7번째 데이터를 숫자로 바꾼다
 df[,6] <- as.numeric(df[,6]) 
 df[,7] <- as.numeric(df[,7]) 
 
