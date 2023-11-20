@@ -116,16 +116,23 @@ df3
 
 # 10.4 데이터 통합
 library("dplyr")
-df1 <- data.frame(ID=1:3, 성명=c('장발장', '팡틴', '자베르'))
+
+# id를 1, 2, 3으로 지정
+df1 <- data.frame(ID=1:3, 성명=c(NA, '팡틴', '자베르'))
 df1
 
-df2 <- data.frame(ID=2:4, 경력=c(7, 5, 10))
+# id를 2, 3, 4로 지정
+df2 <- data.frame(ID=2:4, 경력=c(7, NaN, 10))
 df2
 
+# 데이터가 있는 부분만(겹치는 키값)
 inner_join(df1, df2, by = "ID")
 
+# 좌측 데이터 기준으로
 left_join(df1,df2, by = "ID")
 
+# 우측 데이터 기준으로
 right_join(df1,df2, by = "ID")
 
+# 모든 데이터를 합침
 full_join(df1,df2, by = "ID") 
