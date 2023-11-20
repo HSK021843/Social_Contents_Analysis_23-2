@@ -102,6 +102,7 @@ df3$Z[df3$Z <= -Inf] <- 20
 df3$W[df3$W == ""] <- "Unknown"
 df3 
 
+# 적당한 값을 지정하는 예시
 df3 <- df
 df3$X[df3$X == 0] <- 10
 df3$X[is.na(df3$X)] <- mean(df3$X[is.finite(df3$X)])
